@@ -1,11 +1,17 @@
 {
   "input": {
-    "prompt": "a photo of an astronaut riding a horse on mars",
-    "negative_prompt": "blurry, bad quality",
+    "sd_model_checkpoint": "JuggernautXL.safetensors",
+    "prompt": "a photograph of an astronaut riding a horse",
+    "negative_prompt": "text, watermark, blurry, low quality",
+    "steps": 6,
+    "cfg_scale": 3,
     "width": 512,
     "height": 512,
-    "num_inference_steps": 20,
-    "guidance_scale": 7.5,
-    "seed": 42
+    "sampler_name": "DPM++ SDE",
+    "enable_hr": true,
+    "hr_scale": 1,
+    "hr_upscaler": "4x_NMKD-Siax_200k",
+    "hr_second_pass_steps": 5,
+    "denoising_strength": 0.25
   }
 }

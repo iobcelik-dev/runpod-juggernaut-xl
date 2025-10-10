@@ -61,9 +61,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN cd stable-diffusion-webui && \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
-# Copy models from download stage
-COPY --from=download /models/JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors
-COPY --from=download /models/4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth
+# Move models from download stage using bind mount (saves space vs COPY)
+RUN --mount=type=bind,from=download,source=/models,target=/tmp/models \
+    mkdir -p /stable-diffusion-webui/models/Stable-diffusion && \
+    mkdir -p /stable-diffusion-webui/models/ESRGAN && \
+    mv /tmp/models/JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors && \
+    mv /tmp/models/4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth && \
+    ls -lh /stable-diffusion-webui/models/Stable-diffusion/ && \
+    ls -lh /stable-diffusion-webui/models/ESRGAN/
 
 # install dependencies
 COPY requirements.txt .
