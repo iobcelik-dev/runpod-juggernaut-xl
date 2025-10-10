@@ -5,8 +5,8 @@ FROM alpine/git:2.43.0 as download
 
 # Download Juggernaut XL model and ESRGAN Upscaler model
 RUN apk add --no-cache wget && \
-    wget -q -O /models/JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors && \
-    wget -q -O /models/4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth
+    wget -q -O ./JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors && \
+    wget -q -O ./4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth
 
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
@@ -36,8 +36,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
 # Copy models from download stage
-COPY --from=download /models/JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors
-COPY --from=download /models/4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth
+COPY --from=download ./JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors
+COPY --from=download ./4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth
 
 # install dependencies
 COPY requirements.txt .
