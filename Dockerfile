@@ -3,10 +3,10 @@
 # ---------------------------------------------------------------------------- #
 FROM alpine/git:2.43.0 as download
 
-# NOTE: CivitAI usually requires an API token, so you need to add it in the header
-#       of the wget command if you're using a model from CivitAI.
+# Download Juggernaut XL model and ESRGAN Upscaler model
 RUN apk add --no-cache wget && \
-    wget -q -O /model.safetensors https://huggingface.co/XpucT/Deliberate/resolve/main/Deliberate_v6.safetensors
+    wget -q -O /models/JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors && \
+    wget -q -O /models/4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth
 
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
@@ -35,7 +35,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements_versions.txt && \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
-COPY --from=download /model.safetensors /model.safetensors
+# Copy models from download stage
+COPY --from=download /models/JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors
+COPY --from=download /models/4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth
 
 # install dependencies
 COPY requirements.txt .

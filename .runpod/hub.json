@@ -1,9 +1,9 @@
 {
-  "title": "Automatic1111 Stable Diffusion web UI",
-  "description": "Built upon the Stable Diffusion WebUI, this worker provides an API to generate images with Stable Diffusion models.",
+  "title": "SDXL + Juggernaut XL - Web API (Automatic1111)",
+  "description": "Built upon the Stable Diffusion WebUI, this worker provides an API to generate images with Stable Diffusion (Juggernaut XL).",
   "type": "serverless",
   "category": "image",
-  "iconUrl": "https://dummyimage.com/100x100/ff5733/fff&text=SD",
+  "iconUrl": "https://dummyimage.com/100x100/640aff/fff&text=SD",
   "config": {
     "runsOn": "GPU",
     "containerDiskInGb": 20,
