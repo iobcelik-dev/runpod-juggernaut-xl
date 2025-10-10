@@ -29,12 +29,22 @@ RUN apt-get update && \
     fonts-dejavu-core rsync git jq moreutils aria2 wget libgoogle-perftools-dev libtcmalloc-minimal4 procps libgl1 libglib2.0-0 && \
     apt-get autoremove -y && rm -rf /var/lib/apt/lists/* && apt-get clean -y
 
-RUN --mount=type=cache,target=/root/.cache/pip \
-    git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git && \
+# Clone the repository
+RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git && \
     cd stable-diffusion-webui && \
-    git reset --hard ${A1111_RELEASE} && \
-    pip install xformers && \
-    pip install -r requirements_versions.txt && \
+    git reset --hard ${A1111_RELEASE}
+
+# Install xformers separately to reduce memory pressure
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir xformers
+
+# Install requirements_versions.txt with memory optimization
+RUN --mount=type=cache,target=/root/.cache/pip \
+    cd stable-diffusion-webui && \
+    pip install --no-cache-dir -r requirements_versions.txt
+
+# Prepare environment
+RUN cd stable-diffusion-webui && \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
 # Copy models from download stage
