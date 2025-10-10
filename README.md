@@ -1,7 +1,5 @@
 # Automatic1111 Stable Diffusion - Juggernaut XL
 
-[![RunPod](https://api.runpod.io/badge/runpod-workers/worker-a1111)](https://www.runpod.io/console/hub/runpod-workers/worker-a1111)
-
 A RunPod serverless worker that runs [Automatic1111 Stable Diffusion WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui) and exposes its `txt2img` API endpoint.
 
 ## 🎨 Pre-installed Models

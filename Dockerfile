@@ -1,33 +1,7 @@
 # ---------------------------------------------------------------------------- #
-#                         Stage 1: Download the models                         #
+#                        Build the final image                                 #
 # ---------------------------------------------------------------------------- #
-FROM alpine/git:2.43.0 AS download
-
-WORKDIR /models
-
-# Download Juggernaut XL model and ESRGAN Upscaler model
-RUN --mount=type=secret,id=HF_TOKEN \
-    apk add --no-cache wget && \
-    echo "Downloading models..." && \
-    HF_TOKEN_VALUE=$(cat /run/secrets/HF_TOKEN 2>/dev/null || echo "") && \
-    if [ -z "$HF_TOKEN_VALUE" ]; then \
-        echo "Warning: HF_TOKEN not provided, attempting download without auth..."; \
-        wget --no-check-certificate -q -O ./JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors || exit 1; \
-        wget --no-check-certificate -q -O ./4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth || exit 1; \
-    else \
-        wget --header="Authorization: Bearer $HF_TOKEN_VALUE" -q -O ./JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors || exit 1; \
-        wget --header="Authorization: Bearer $HF_TOKEN_VALUE" -q -O ./4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth || exit 1; \
-    fi && \
-    ls -lh && \
-    echo "Verifying downloads..." && \
-    test -f ./JuggernautXL.safetensors || (echo "ERROR: JuggernautXL.safetensors not found" && exit 1) && \
-    test -f ./4x_NMKD-Siax_200k.pth || (echo "ERROR: 4x_NMKD-Siax_200k.pth not found" && exit 1) && \
-    echo "Download successful!"
-
-# ---------------------------------------------------------------------------- #
-#                        Stage 2: Build the final image                        #
-# ---------------------------------------------------------------------------- #
-FROM python:3.10.14-slim AS build_final_image
+FROM python:3.10.14-slim
 
 ARG A1111_RELEASE=v1.9.3
 
@@ -61,14 +35,26 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN cd stable-diffusion-webui && \
     python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
-# Move models from download stage using bind mount (saves space vs COPY)
-RUN --mount=type=bind,from=download,source=/models,target=/tmp/models \
+# Download models directly in the final image (no duplication!)
+RUN --mount=type=secret,id=HF_TOKEN \
     mkdir -p /stable-diffusion-webui/models/Stable-diffusion && \
     mkdir -p /stable-diffusion-webui/models/ESRGAN && \
-    mv /tmp/models/JuggernautXL.safetensors /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors && \
-    mv /tmp/models/4x_NMKD-Siax_200k.pth /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth && \
+    echo "Downloading models..." && \
+    HF_TOKEN_VALUE=$(cat /run/secrets/HF_TOKEN 2>/dev/null || echo "") && \
+    if [ -z "$HF_TOKEN_VALUE" ]; then \
+        echo "Warning: HF_TOKEN not provided, attempting download without auth..."; \
+        wget --no-check-certificate -q -O /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors || exit 1; \
+        wget --no-check-certificate -q -O /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth || exit 1; \
+    else \
+        wget --header="Authorization: Bearer $HF_TOKEN_VALUE" -q -O /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors || exit 1; \
+        wget --header="Authorization: Bearer $HF_TOKEN_VALUE" -q -O /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth || exit 1; \
+    fi && \
+    echo "Verifying downloads..." && \
+    test -f /stable-diffusion-webui/models/Stable-diffusion/JuggernautXL.safetensors || (echo "ERROR: JuggernautXL.safetensors not found" && exit 1) && \
+    test -f /stable-diffusion-webui/models/ESRGAN/4x_NMKD-Siax_200k.pth || (echo "ERROR: 4x_NMKD-Siax_200k.pth not found" && exit 1) && \
     ls -lh /stable-diffusion-webui/models/Stable-diffusion/ && \
-    ls -lh /stable-diffusion-webui/models/ESRGAN/
+    ls -lh /stable-diffusion-webui/models/ESRGAN/ && \
+    echo "Download successful!"
 
 # install dependencies
 COPY requirements.txt .
