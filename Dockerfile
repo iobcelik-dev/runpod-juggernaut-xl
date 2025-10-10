@@ -1,17 +1,19 @@
 # ---------------------------------------------------------------------------- #
 #                         Stage 1: Download the models                         #
 # ---------------------------------------------------------------------------- #
-FROM alpine/git:2.43.0 as download
+FROM alpine/git:2.43.0 AS download
 
 # Download Juggernaut XL model and ESRGAN Upscaler model
-RUN apk add --no-cache wget && \
-    wget -q -O ./JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors && \
-    wget -q -O ./4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth
+RUN --mount=type=secret,id=HF_TOKEN \
+    apk add --no-cache wget && \
+    wget --header="Authorization: Bearer $(cat /run/secrets/HF_TOKEN)" -q -O ./JuggernautXL.safetensors https://huggingface.co/RunDiffusion/Juggernaut-XI-v11/resolve/main/Juggernaut-XI-byRunDiffusion.safetensors && \
+    wget --header="Authorization: Bearer $(cat /run/secrets/HF_TOKEN)" -q -O ./4x_NMKD-Siax_200k.pth https://huggingface.co/gemasai/4x_NMKD-Siax_200k/resolve/main/4x_NMKD-Siax_200k.pth && \
+    ls -lh
 
 # ---------------------------------------------------------------------------- #
 #                        Stage 2: Build the final image                        #
 # ---------------------------------------------------------------------------- #
-FROM python:3.10.14-slim as build_final_image
+FROM python:3.10.14-slim AS build_final_image
 
 ARG A1111_RELEASE=v1.9.3
 
