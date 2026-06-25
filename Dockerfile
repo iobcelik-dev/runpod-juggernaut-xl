@@ -41,7 +41,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN mkdir -p /stable-diffusion-webui/repositories
 
 RUN rm -rf /stable-diffusion-webui/repositories/stable-diffusion-stability-ai && \
-    git clone --depth 1 https://github.com/Stability-AI/stablediffusion.git \
+    git clone --depth 1 https://github.com/w-e-w/stablediffusion.git \
     /stable-diffusion-webui/repositories/stable-diffusion-stability-ai
 
 RUN rm -rf /stable-diffusion-webui/repositories/k-diffusion && \
