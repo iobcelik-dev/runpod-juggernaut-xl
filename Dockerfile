@@ -56,6 +56,12 @@ RUN rm -rf /stable-diffusion-webui/repositories/BLIP && \
     git clone --depth 1 https://github.com/salesforce/BLIP.git \
     /stable-diffusion-webui/repositories/BLIP
 
+RUN rm -rf /stable-diffusion-webui/repositories/generative-models && \
+    git clone https://github.com/Stability-AI/generative-models.git \
+    /stable-diffusion-webui/repositories/generative-models && \
+    git -C /stable-diffusion-webui/repositories/generative-models \
+    checkout 45c443b316737a4ab6e40413d7794a7f5657c19f
+
 # Download models directly in the final image (no duplication!)
 RUN --mount=type=secret,id=HF_TOKEN \
     mkdir -p /stable-diffusion-webui/models/Stable-diffusion && \
