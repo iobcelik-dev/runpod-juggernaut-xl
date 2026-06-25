@@ -38,11 +38,23 @@ RUN --mount=type=cache,target=/root/.cache/pip \
   #  python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
 # Manually install A1111 required repositories
-RUN mkdir -p /stable-diffusion-webui/repositories && \
-    git clone https://github.com/Stability-AI/stablediffusion.git /stable-diffusion-webui/repositories/stable-diffusion-stability-ai && \
-    git clone https://github.com/crowsonkb/k-diffusion.git /stable-diffusion-webui/repositories/k-diffusion && \
-    git clone https://github.com/sczhou/CodeFormer.git /stable-diffusion-webui/repositories/CodeFormer && \
-    git clone https://github.com/salesforce/BLIP.git /stable-diffusion-webui/repositories/BLIP
+RUN mkdir -p /stable-diffusion-webui/repositories
+
+RUN rm -rf /stable-diffusion-webui/repositories/stable-diffusion-stability-ai && \
+    git clone --depth 1 https://github.com/Stability-AI/stablediffusion.git \
+    /stable-diffusion-webui/repositories/stable-diffusion-stability-ai
+
+RUN rm -rf /stable-diffusion-webui/repositories/k-diffusion && \
+    git clone --depth 1 https://github.com/crowsonkb/k-diffusion.git \
+    /stable-diffusion-webui/repositories/k-diffusion
+
+RUN rm -rf /stable-diffusion-webui/repositories/CodeFormer && \
+    git clone --depth 1 https://github.com/sczhou/CodeFormer.git \
+    /stable-diffusion-webui/repositories/CodeFormer
+
+RUN rm -rf /stable-diffusion-webui/repositories/BLIP && \
+    git clone --depth 1 https://github.com/salesforce/BLIP.git \
+    /stable-diffusion-webui/repositories/BLIP
 
 # Download models directly in the final image (no duplication!)
 RUN --mount=type=secret,id=HF_TOKEN \
