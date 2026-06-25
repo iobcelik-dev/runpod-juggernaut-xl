@@ -32,8 +32,8 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-cache-dir -r requirements_versions.txt
 
 # Prepare environment
-RUN cd stable-diffusion-webui && \
-    python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
+# RUN cd stable-diffusion-webui && \
+  #  python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
 
 # Download models directly in the final image (no duplication!)
 RUN --mount=type=secret,id=HF_TOKEN \
