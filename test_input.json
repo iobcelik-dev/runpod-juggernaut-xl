@@ -1,17 +1,14 @@
 {
   "input": {
-    "sd_model_checkpoint": "JuggernautXL.safetensors",
-    "prompt": "a photograph of an astronaut riding a horse",
-    "negative_prompt": "text, watermark, blurry, low quality",
-    "steps": 6,
-    "cfg_scale": 3,
+    "prompt": "a photo of a red apple on a table",
+    "negative_prompt": "blurry, low quality",
+    "steps": 1,
+    "cfg_scale": 1,
     "width": 512,
     "height": 512,
-    "sampler_name": "DPM++ SDE",
-    "enable_hr": true,
-    "hr_scale": 1,
-    "hr_upscaler": "4x_NMKD-Siax_200k",
-    "hr_second_pass_steps": 5,
-    "denoising_strength": 0.25
+    "sampler_name": "Euler",
+    "batch_size": 1,
+    "n_iter": 1,
+    "seed": 1
   }
 }
