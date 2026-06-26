@@ -43,6 +43,10 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     torchvision==0.18.1+cu121 \
     --index-url https://download.pytorch.org/whl/cu121
 
+# Missing k-diffusion dependency
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir dctorch
+
 # Manually install A1111 required repositories
 RUN mkdir -p /stable-diffusion-webui/repositories
 
