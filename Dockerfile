@@ -47,6 +47,11 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-cache-dir dctorch
 
+# Missing OpenAI CLIP dependency for k-diffusion
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir \
+    https://github.com/openai/CLIP/archive/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1.zip
+
 # Manually install A1111 required repositories
 RUN mkdir -p /stable-diffusion-webui/repositories
 
