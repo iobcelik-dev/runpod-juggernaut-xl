@@ -1,14 +1,18 @@
 {
   "input": {
-    "prompt": "a photo of a red apple on a table",
-    "negative_prompt": "blurry, low quality",
+    "prompt": "red apple",
+    "negative_prompt": "",
     "steps": 1,
     "cfg_scale": 1,
-    "width": 512,
-    "height": 512,
+    "width": 256,
+    "height": 256,
     "sampler_name": "Euler",
+    "seed": 1,
     "batch_size": 1,
     "n_iter": 1,
-    "seed": 1
+    "enable_hr": false,
+    "restore_faces": false,
+    "do_not_save_samples": true,
+    "do_not_save_grid": true
   }
 }
