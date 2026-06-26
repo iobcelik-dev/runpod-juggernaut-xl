@@ -44,6 +44,12 @@ RUN rm -rf /stable-diffusion-webui/repositories/stable-diffusion-stability-ai &&
     git clone --depth 1 https://github.com/w-e-w/stablediffusion.git \
     /stable-diffusion-webui/repositories/stable-diffusion-stability-ai
 
+RUN rm -rf /stable-diffusion-webui/repositories/generative-models && \
+    git clone https://github.com/Stability-AI/generative-models.git \
+    /stable-diffusion-webui/repositories/generative-models && \
+    git -C /stable-diffusion-webui/repositories/generative-models \
+    checkout 45c443b316737a4ab6e40413d7794a7f5657c19f
+
 RUN rm -rf /stable-diffusion-webui/repositories/k-diffusion && \
     git clone --depth 1 https://github.com/crowsonkb/k-diffusion.git \
     /stable-diffusion-webui/repositories/k-diffusion
@@ -55,12 +61,6 @@ RUN rm -rf /stable-diffusion-webui/repositories/CodeFormer && \
 RUN rm -rf /stable-diffusion-webui/repositories/BLIP && \
     git clone --depth 1 https://github.com/salesforce/BLIP.git \
     /stable-diffusion-webui/repositories/BLIP
-
-RUN rm -rf /stable-diffusion-webui/repositories/generative-models && \
-    git clone https://github.com/Stability-AI/generative-models.git \
-    /stable-diffusion-webui/repositories/generative-models && \
-    git -C /stable-diffusion-webui/repositories/generative-models \
-    checkout 45c443b316737a4ab6e40413d7794a7f5657c19f
 
 # Download models directly in the final image (no duplication!)
 RUN --mount=type=secret,id=HF_TOKEN \
