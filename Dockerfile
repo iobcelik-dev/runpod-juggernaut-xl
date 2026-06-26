@@ -25,8 +25,8 @@ RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git && \
     git reset --hard ${A1111_RELEASE}
 
 # Install xformers separately to reduce memory pressure
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --no-cache-dir xformers
+# RUN --mount=type=cache,target=/root/.cache/pip \
+#     pip install --no-cache-dir xformers
 
 # Install requirements_versions.txt with memory optimization
 RUN --mount=type=cache,target=/root/.cache/pip \
@@ -36,6 +36,13 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Prepare environment
 # RUN cd stable-diffusion-webui && \
   #  python -c "from launch import prepare_environment; prepare_environment()" --skip-torch-cuda-test
+
+# Install CUDA-compatible PyTorch first
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --no-cache-dir \
+    torch==2.3.1+cu121 \
+    torchvision==0.18.1+cu121 \
+    --index-url https://download.pytorch.org/whl/cu121
 
 # Manually install A1111 required repositories
 RUN mkdir -p /stable-diffusion-webui/repositories
